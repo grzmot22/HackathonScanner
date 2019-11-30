@@ -15,7 +15,7 @@ import {
   renderLandmarks,
   renderBottomBar
 } from "./Methods";
-import { styles, landmarkSize } from "./styles";
+import { styles } from "./styles";
 
 export default class CameraScreen extends React.Component {
   state = {
@@ -34,7 +34,8 @@ export default class CameraScreen extends React.Component {
     pictureSizes: [],
     pictureSizeId: 0,
     showGallery: false,
-    showMoreOptions: false
+    showMoreOptions: false,
+    counter: 10
   };
 
   async componentWillMount() {
@@ -49,7 +50,28 @@ export default class CameraScreen extends React.Component {
       console.log(e, "Directory exists");
     });
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.faces !== this.state.faces) {
+      if (this.state.faces.length > 0) {
+        if (prevState.faces[0] !== undefined) {
+          if (prevState.faces[0].faceID === this.state.faces[0].faceID) {
+            console.log("Twarz wykrytta");
+            if (this.state.counter === 10) {
+              this.setState({ counter: --this.state.counter });
+              console.log("Twarz wykrytta", this.state.counter);
+            } else if (
+              prevState.counter > this.state.counter &&
+              this.state.counter > 0
+            ) {
+              this.setState({ counter: --this.state.counter });
+              console.log(this.state.faces[0].faceID);
+              console.log("Twarz wykrytta", this.state.counter);
+            }
+          }
+        }
+      }
+    }
+  }
   getRatios = async () => {
     const ratios = await this.camera.getSupportedRatios();
     return ratios;
@@ -146,7 +168,7 @@ export default class CameraScreen extends React.Component {
           this.state.faceDetecting ? this.onFacesDetected : undefined
         }
         onFaceDetectionError={this.onFaceDetectionError}
-        DetectorSettings={{
+        faceDetectorSettings={{
           mode: FaceDetector.Constants.Mode.fast,
           detectLandmarks: FaceDetector.Constants.Landmarks.all,
           runClassifications: FaceDetector.Constants.Classifications.all,
@@ -177,7 +199,7 @@ export default class CameraScreen extends React.Component {
       ? this.renderCamera()
       : renderNoPermissions();
     const content = this.state.showGallery
-      ? renderGallery()
+      ? renderGallery(this.toggleView)
       : cameraScreenContent;
     return <View style={styles.container}>{content}</View>;
   }

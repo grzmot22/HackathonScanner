@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Text, View, TouchableOpacity } from "react-native";
-import { styles } from "./styles";
+import { styles, landmarkSize } from "./styles";
 import GalleryScreen from "./GalleryScreen";
 import {
   Ionicons,
@@ -85,8 +85,8 @@ export const renderMoreOptions = (
   </View>
 );
 
-export const renderGallery = () => {
-  return <GalleryScreen onPress={this.toggleView.bind(this)} />;
+export const renderGallery = (toggleView) => {
+  return <GalleryScreen onPress={toggleView.bind(this)} />;
 };
 
 export const renderLandmarksOfFace = (face) => {
